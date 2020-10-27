@@ -1,8 +1,9 @@
-import 'package:path_provider/path_provider.dart';
-import 'dart.io';
-import 'dart:convert';
+import 'package:path_provider/path_provider.dart'; // Filesystem locations
+import 'dart:io';  // Used by File
+import 'dart:convert'; // Used by json
 
 class DatabaseFileRoutines {
+
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
 
@@ -12,15 +13,15 @@ class DatabaseFileRoutines {
   Future<File> get _localFile async {
     final path = await _localPath;
 
-    return File('$path/local_persistance.json');
+    return File('$path/local_persistence.json');
   }
 
   Future<String> readJournals() async {
     try {
       final file = await _localFile;
 
-      if (!file.existsSynch()) {
-        print("File does not exist: ${file.absolute}");
+      if (!file.existsSync()) {
+        print("File does not Exist: ${file.absolute}");
         await writeJournals('{"journals": []}');
       }
 
@@ -37,18 +38,20 @@ class DatabaseFileRoutines {
   Future<File> writeJournals(String json) async {
     final file = await _localFile;
 
-    // write the file
+    // Write the file
     return file.writeAsString('$json');
   }
 }
 
-// to read and parse from JSON data - databaseFromJson(jsonString);
+// Local Storage JSON Database file and Journal Class
+// To read and parse from JSON data - databaseFromJson(jsonString);
+// To save and parse to JSON Data - databaseToJson(jsonString);
+
 Database databaseFromJson(String str) {
   final dataFromJson = json.decode(str);
   return Database.fromJson(dataFromJson);
 }
 
-// to save and parse to JSON data = databaseToJson(jsonString);
 String databaseToJson(Database data) {
   final dataToJson = data.toJson();
   return json.encode(dataToJson);
@@ -76,14 +79,14 @@ class Journal {
   String mood;
   String note;
 
-  Journal ({
+  Journal({
     this.id,
     this.date,
     this.mood,
     this.note,
   });
 
-  factory Journal.fromJson(Map<String, dynamic> json) => Journal (
+  factory Journal.fromJson(Map<String, dynamic> json) => Journal(
     id: json["id"],
     date: json["date"],
     mood: json["mood"],
@@ -98,6 +101,7 @@ class Journal {
   };
 }
 
+// Used for Data Entry to pass between pages
 class JournalEdit {
   String action;
   Journal journal;
